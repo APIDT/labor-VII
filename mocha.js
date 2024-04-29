@@ -1,53 +1,29 @@
 const assert = require('assert');
-const { checkPasswordRequirements, hashPassword, compareWithHash, checkHash } = require('hashpassword');
+const { checkPass, hashPassword, checkPasswordMatch, password  } = require('./password.js');
 
-describe('Password Functions', () => {
-    describe('Check Password Requirements', () => {
-        it('should return true for a valid password', () => {
-            const validPassword = "!12345678Aa";
-            assert.strictEqual(checkPasswordRequirements(validPassword), true);
-        });
+var describe = ('Password functions', function() {
+  it('checkPass should return true for a valid password length', function() {
+    assert.strictEqual(checkPass('password'), true);
+  });
 
-        it('should return false for a password shorter than 9 characters', () => {
-            const invalidPassword = "!1234Aa";
-            assert.strictEqual(checkPasswordRequirements(invalidPassword), false);
-        });
+  it('checkPass should return false for a password with less than 9 characters', function() {
+    assert.strictEqual(checkPass('pass'), false);
+  });
 
-        it('should return false for a password without uppercase letters', () => {
-            const invalidPassword = "!12345678aa";
-            assert.strictEqual(checkPasswordRequirements(invalidPassword), false);
-        });
+  it('hashPassword should hash a valid password', async function() {
+    const hashedPassword = await hashPassword('hashPassword');
+    assert.ok(hashedPassword);
+  });
 
-        it('should return false for a password without lowercase letters', () => {
-            const invalidPassword = "!12345678AA";
-            assert.strictEqual(checkPasswordRequirements(invalidPassword), false);
-        });
+  it('checkPasswordMatch should return true for matching passwords', async function() {
+    const hashedPassword = await hashPassword(hashPassword);
+    const isMatch = await checkPasswordMatch(password, hashedPassword);
+    assert.strictEqual(isMatch, true);
+  });
 
-        it('should return false for a password without numbers', () => {
-            const invalidPassword = "!Abcdefgh";
-            assert.strictEqual(checkPasswordRequirements(invalidPassword), false);
-        });
-
-        it('should return false for a password without special characters', () => {
-            const invalidPassword = "Abcdefgh12345678";
-            assert.strictEqual(checkPasswordRequirements(invalidPassword), false);
-        });
-    });
-
-    describe('Hash Password and Compare with Hash', () => {
-        it('should hash and match a password correctly', async () => {
-            const password = "!12345678Aa";
-            const hashedPassword = await hashPassword(password);
-            const match = await compareWithHash(password, hashedPassword);
-            assert.strictEqual(match, true);
-        });
-
-        it('should not match a hashed password with an incorrect password', async () => {
-            const password = "!12345678Aa";
-            const incorrectPassword = "!12345678Bb";
-            const hashedPassword = await hashPassword(password);
-            const match = await compareWithHash(incorrectPassword, hashedPassword);
-            assert.strictEqual(match, false);
-        });
-    });
+  it('checkPasswordMatch should return false for non-matching passwords', async function() {
+    const hashedPassword = await hashPassword(hashPassword);
+    const isMatch = await checkPasswordMatch(password, hashedPassword);
+    assert.strictEqual(isMatch, false);
+  });
 });
