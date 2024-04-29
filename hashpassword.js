@@ -1,59 +1,38 @@
+const prompt = require("prompt-sync")()
 const bcrypt = require('bcrypt');
 
-function checkPasswordRequirements(password) {
-    if (password.length < 9) {
-        return false;
-    }
-    
-    if (!/[A-Z]/.test(password) || !/[a-z]/.test(password)) {
-        return false;
-    }
-    
-    if (!/\d/.test(password)) {
-        return false;
-    }
+console.log("no fewer than 9 characters")
+console.log("==================================")
+const password = prompt("Enter :")
 
-    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
-        return false;
-    }
-    return true;
+function checkPass(password){
+  if(password.length > 8){
+    return true
+  }
 }
 
-async function hashPassword(password) {
-    try {
-        if (!checkPasswordRequirements(password)) {
-            console.log("Password does not meet requirements.");
-            return;
-        }
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-        console.log("Hashed password:", hashedPassword);
-        return hashedPassword;
-    } catch (error) {
-        console.error("Error:", error.message);
-    }
+async function hashPassword(Password){
+  switch(checkPass(password)){
+    case true:
+      const hesh = await bcrypt.hash(Password, 5)
+      console.log("Hash Password: " + hesh)
+      checkHash(password, hesh)
+      break
+    default: console.log("no fewer than 9 characters")
+  }
 }
 
-async function compareWithHash(password, hash) {
-    try {
-        const match = await bcrypt.compare(password, hash);
-        return match;
-    } catch (error) {
-        throw error;
-    }
+async function checkHash(x, y){
+const ch = await bcrypt.compare(x, y)
+switch(ch){
+  case true : console.log("success");
+  break;
+  default: console.log("Error")
+} 
 }
 
-async function checkHash(password, hashedPassword) {
-    try {
-        const match = await compareWithHash(password, hashedPassword);
-        if (match) {
-            console.log("Success! Password matches hash.");
-        } else {
-            console.log("Error! Password does not match hash.");
-        }
-    } catch (error) {
-        console.error("Error:", error.message);
-    }
-}
+hashPassword(password)
 
-module.exports = { checkPasswordRequirements, hashPassword, compareWithHash, checkHash };
+module.exports={
+  hashPassword, checkHash, checkPass, password, hashPassword
+}
